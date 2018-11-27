@@ -19,7 +19,6 @@ var map = input.map(function (name) {
     name: name,
     count: 1
   }
-
   return person;
 });
 
@@ -45,9 +44,47 @@ var reduce = map.reduce(function (reduced, person) {
       reduced.push(person);
     }
   }
-  
+
   return reduced;
 }, []);
 
 console.log('Reduce:');
 console.log(reduce);
+
+
+
+
+
+
+// simple soln
+var output = [];
+for (var i = 0; i < input.length; i++) {
+
+  if (output.length == 0) {
+    var person = {
+      name: input[i],
+      count: 1
+    };
+    output.push(person);
+    console.log(person);
+  } else {
+    var newEntry = true;
+    for (var j = 0; j < output.length; j++) {
+      if (output[j].name == input[i]) {
+        output[j].count++;
+        newEntry = false;
+        break;
+      }
+    }
+    if (newEntry) {
+      var person = {
+        name: input[i],
+        count: 1
+      };
+      output.push(person);
+    }
+  }
+}
+
+console.log('Simple Solution')
+console.log(output);

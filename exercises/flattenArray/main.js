@@ -21,11 +21,30 @@ function flatArr(array) {
       // console.log('true');
       flatArr(array[i]);
     } else {
-      output.push(array[i]);
+      if(addToArray(array[i],output)){
+        output.push(array[i]);
+
+      }
+
+      // output.push(array[i]);
+
     }
   }
 }
 
+function addToArray(input, arr) {
+  for (var i = 0; i < arr.length; i++) {
+    if (arr[i] === input) {
+      console.log('false');
+      return false;
+    }
+  }
+  console.log('true');
+  return true;
+}
 flatArr(input);
 console.log("output");
 console.log(output);
+
+
+// carBrands.indexOf(car1);

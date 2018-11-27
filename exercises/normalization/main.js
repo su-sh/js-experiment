@@ -57,8 +57,6 @@ var output = {
   }
 }
  */
-
-
 var people = [{
   id: 1,
   name: "Aegon Targaryen",
@@ -82,38 +80,33 @@ var people = [{
   }],
 }];
 
-var output = [];
 
-function normalization(input) {
 
-  for (var i = 0; i < input.length; i++) {
-    var person = {
+
+var output=[];
+var newObj = {};
+
+
+function normalize(input) {
+  for (var i=0; i < input.length; i++) {
+    newObj = {
       id: input[i].id,
       name: input[i].name,
-      childern: []
+      children: []
     }
-
-    if (input[i].children.length > 0) {
-      for (var j = 0; j < input[i].children.length; j++) {
-        person.childern.push(input[i].children[j].id);
-        // var newPerson={
-        //   id: input[i].children[j].id,
-        //   name: input[i].children[j].name,
-        //   childern: []
-        // }
-        // output.push(newPerson);
-
-      }
-      normalization(input[i].children);
-
-      output.push(person);
-
-    } else {
-      output.push(person);
+    if (input[i].children === undefined) {
+      output.push(newObj);
+      return;
     }
-    console.log(output);
+    for (var j = 0; j < input[i].children.length; j++) {
+      (newObj.children).push(input[i].children[j].id);
+    }
+    output.push(newObj);
+    input = input[i].children;
+    normalize(input);
 
   }
 }
 
-normalization(people);
+normalize(people);
+console.log(output)

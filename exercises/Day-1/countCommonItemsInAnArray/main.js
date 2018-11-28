@@ -26,7 +26,6 @@ console.log('Map:');
 console.log(map);
 
 
-
 // Reducer function
 var reduce = map.reduce(function (reduced, person) {
   if (reduced.length == 0) {

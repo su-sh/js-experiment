@@ -7,7 +7,7 @@
 
 var input = [
   [1, 2, 3],
-  [2, 4, 5], 6
+  [2, 4, 5], 6,{name:'john'}
 ];
 var output = [];
 
@@ -21,9 +21,10 @@ function flatArr(array) {
       // console.log('true');
       flatArr(array[i]);
     } else {
+    
+    
       if(addToArray(array[i],output)){
         output.push(array[i]);
-
       }
 
       // output.push(array[i]);

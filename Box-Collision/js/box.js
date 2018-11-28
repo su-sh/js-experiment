@@ -1,3 +1,4 @@
+
 console.log('box.js');
 
 var boxArray = [];
@@ -16,35 +17,75 @@ function Box(x, y) {
 
   };
 
-  this.create=function(parent){
+  this.create = function (parent) {
     this.element = document.createElement('div');
     this.element.style.width = this.width;
     this.element.style.height = this.height;
     this.element.style.position = 'absolute';
-    this.element.style.backgroundColor=this.color;
-    this.setPosition(this.x,this.y);
+    this.element.style.backgroundColor = this.color;
+    this.setPosition(this.x, this.y);
     parent.appendChild(this.element);
   }
-  
-  this.setPosition=function(x,y){
+
+  this.setPosition = function (x, y) {
     this.x = x;
     this.y = y;
-    this.element.style.top= this.y+'px';
-    this.element.style.left= this.x+'px';
+    this.element.style.top = this.y + 'px';
+    this.element.style.left = this.x + 'px';
   }
 
   this.move = function () {
     this.x = this.x + this.dirX;
     this.y = this.y + this.dirY;
-    this.update();
+
   }
 
-  this.update=function(){
-    this.element.style.top= this.y+'px';
-    this.element.style.left= this.x+'px';
+  this.update = function () {
+    this.element.style.top = this.y + 'px';
+    this.element.style.left = this.x + 'px';
   }
 
-  
+  this.checkCollision = function (mainContainer) {
+
+    console.log(mainContainer.style.height);
+
+    if ((this.x < 0) || ((this.x + this.width > parseInt(mainContainer.style.width, 10)))) {
+      this.dirX = this.dirX * -1;
+      console.log('collision x');
+    }
+
+    if ((this.y < 0) || ((this.y + this.height > parseInt(mainContainer.style.height, 10)))) {
+      this.dirY = this.dirY * -1;
+      console.log('collision y');
+    }
+
+  }
+
+
+  this.checkObjCollision = function () {
+    var box1, box2;
+    for (var i = 0; i < boxArray.length; i++) {
+      for (j = 0; j < boxArray.length; j++) {
+        if (i != j) {
+          // console.log(i,' ',j)
+
+          box1 = boxArray[i];
+          box2 = boxArray[j];
+          if (box1.x < box2.x + box2.width &&
+            box1.x + box1.width > box2.x && box1.y < box2.y + box2.height &&
+            box1.height + box1.y > box2.y) {
+            console.log('collided');
+            box1.directionY *= -1;
+            box1.directionX *= -1;
+            
+            box2.directionY *= -1;
+            box2.directionX *= -1;
+          }
+        }
+      }
+    }
+  }
+
 
 }
 
@@ -70,17 +111,15 @@ function init() {
     boxArray.push(box);
   }
 
-  var mainInterval= setInterval(function(){
-    
-    for(var i=0;i<boxArray.length;i++){
+  var mainInterval = setInterval(function () {
+    for (var i = 0; i < boxArray.length; i++) {
       boxArray[i].move();
+      boxArray[i].checkCollision(mainContainer);
+      boxArray[i].checkObjCollision();
+      boxArray[i].update();
     }
-    
-    
-    console.log(boxArray[1]);
-  },1000/60);
-
-
+    // console.log(boxArray[1]);
+  }, 1000 / 30);
 }
 
 init();

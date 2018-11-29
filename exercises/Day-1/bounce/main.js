@@ -24,12 +24,12 @@ function start() {
 }
 
 function bounch() {
-  if (point.x >= parseInt(containerHeight, 10) || point.x < 0) {
+  if (point.y >= parseInt(containerHeight, 10) || point.y < 0) {
     movement = movement * -1;
   }
-  point.x = point.x + movement;
-  console.log(point.x)
-  ball.style.top = point.x + "px";
+  point.y = point.y + movement;
+  console.log(point.y)
+  ball.style.top = point.y + "px";
 }
 
 

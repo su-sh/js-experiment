@@ -133,6 +133,7 @@ function Box(x, y) {
 
 
 function init() {
+
   var mainContainer = document.getElementById('main-container');
   mainContainer.style.width = '300px';
   mainContainer.style.height = '300px';

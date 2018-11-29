@@ -1,6 +1,8 @@
 console.log('box.js');
 
 var boxArray = [];
+var colorArray = ['red', 'yellow', 'blue'];
+
 
 function Box(x, y) {
   this.x = x;
@@ -9,7 +11,9 @@ function Box(x, y) {
   this.dirY = 1;
   this.width = 10;
   this.height = 10;
-  this.color = 'black';
+
+  var c= (x+y)%3;
+  this.color = colorArray[c];
   this.element;
 
   this.draw = function () {
@@ -36,7 +40,8 @@ function Box(x, y) {
   this.move = function () {
     this.x = this.x + this.dirX;
     this.y = this.y + this.dirY;
-
+    // this.element.style.top = this.y + 'px';
+    // this.element.style.left = this.x + 'px';
   }
 
   this.update = function () {
@@ -79,14 +84,15 @@ function Box(x, y) {
             console.log('box1: ', box1.dirX, 'box1Y;', box1.dirY);
             console.log('box2: ', box2.dirX, 'box2Y;', box2.dirY);
 
-            // var tempX = box1.dirX;
-            // var tempY = box1.dirY;
+            var tempX = box1.dirX;
+            var tempY = box1.dirY;
 
             box1.dirX *= -1;
             box1.dirY = -1;
 
             box2.dirX *= -1;
             box2.dirY *= -1;
+
 
             // box2.dirX *= -1;
             // box2.dirY *= -1;
@@ -142,7 +148,7 @@ function init() {
   var boxNos = 10;
 
   for (var i = 0; i < boxNos; i++) {
-    var box = new Box(generateRandomNumber(300), generateRandomNumber(300));
+    var box = new Box(generateRandomNumber(300-20), generateRandomNumber(300-20));
     box.create(mainContainer);
     boxArray.push(box);
   }
@@ -151,6 +157,14 @@ function init() {
   var mainInterval = setInterval(function () {
     for (var i = 0; i < boxArray.length; i++) {
       boxArray[i].checkCollision(mainContainer);
+
+      // boxArray[i].checkObjCollision();
+      // boxArray[i].update();
+      // boxArray[i].move();
+
+    }
+    for (var i = 0; i < boxArray.length; i++) {
+      // boxArray[i].checkCollision(mainContainer);
 
       // boxArray[i].checkObjCollision();
       boxArray[i].update();

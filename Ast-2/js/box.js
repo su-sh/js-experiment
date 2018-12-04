@@ -15,7 +15,7 @@ function Box(x, y) {
   this.color = colorArray[c];
   this.element;
 
-  this.create = function(parent) {
+  this.create = function (parent) {
     this.element = document.createElement('div');
     this.element.style.width = this.width;
     this.element.style.height = this.height;
@@ -25,24 +25,24 @@ function Box(x, y) {
     parent.appendChild(this.element);
   }
 
-  this.setPosition = function(x, y) {
+  this.setPosition = function (x, y) {
     this.x = x;
     this.y = y;
     this.element.style.top = this.y + 'px';
     this.element.style.left = this.x + 'px';
   }
 
-  this.move = function() {
+  this.move = function () {
     this.x = this.x + this.dirX;
     this.y = this.y + this.dirY;
   }
 
-  this.update = function() {
+  this.update = function () {
     this.element.style.top = this.y + 'px';
     this.element.style.left = this.x + 'px';
   }
 
-  this.checkWallCollision = function(mainContainer) {
+  this.checkWallCollision = function (mainContainer) {
 
     // console.log(mainContainer.style.height);
     if ((this.x < 0) || ((this.x + this.width > parseInt(mainContainer.style.width, 10)))) {
@@ -56,7 +56,7 @@ function Box(x, y) {
     }
   }
 
-  this.checkObjCollision = function(boxArray) {
+  this.checkObjCollision = function (boxArray) {
     var box1, box2;
     box1 = this;
 
@@ -84,41 +84,47 @@ function Box(x, y) {
   }
 }
 
-function init() {
 
-  var width = 200;
-  var height = 200;
-  var boxNos = 10;
 
-  var mainContainer = document.getElementById('main-container');
-  mainContainer.style.width = width + 'px';
-  mainContainer.style.height = height + 'px';
-  mainContainer.style.backgroundColor = 'green';
+function BoxCollision() {
 
-  
-  for (var i = 0; i < boxNos; i++) {
-    var box = new Box(generateRandomNumber(width - 20), generateRandomNumber(height - 20));
-    box.create(mainContainer);
-    boxArray.push(box);
-  }
+  this.init = function () {
 
-  var mainInterval = setInterval(function() {
-    for (var i = 0; i < boxArray.length; i++) {
+    var width = 200;
+    var height = 200;
+    var boxNos = 10;
 
-      boxArray[i].move();
+    var mainContainer = document.getElementById('main-container');
+    mainContainer.style.width = width + 'px';
+    mainContainer.style.height = height + 'px';
+    mainContainer.style.backgroundColor = 'green';
 
-      boxArray[i].update();
 
-      boxArray[i].checkWallCollision(mainContainer);
-
-      boxArray[i].checkObjCollision(boxArray);
-
+    for (var i = 0; i < boxNos; i++) {
+      var box = new Box(generateRandomNumber(width - 20), generateRandomNumber(height - 20));
+      box.create(mainContainer);
+      boxArray.push(box);
     }
 
-  }, 1000 / 30);
+    var mainInterval = setInterval(function () {
+      for (var i = 0; i < boxArray.length; i++) {
+
+        boxArray[i].move();
+
+        boxArray[i].update();
+
+        boxArray[i].checkWallCollision(mainContainer);
+
+        boxArray[i].checkObjCollision(boxArray);
+
+      }
+
+    }, 1000 / 30);
+  }
+
 }
 
-init();
+
 
 
 /**

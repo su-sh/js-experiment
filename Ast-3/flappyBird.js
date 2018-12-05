@@ -1,16 +1,11 @@
 var cvs = document.getElementById('gameCanvas');
 var ctx = cvs.getContext("2d");
 
-
-
-
-
 let gameMessage = new Image();
 gameMessage.src = './img/message.png';
 
 let bg = new Image();
 bg.src = "./img/background.png";
-
 
 let keyPressed = false;
 
@@ -23,15 +18,20 @@ class Bird {
   }
 }
 
-
 class Pipe {
   constructor(pipeTop, pipeBottom) {
     this.x = cvs.width;
-    this.y = Math.floor(Math.random() * pipeTop) - pipeBottom;
-
-    console.log('top ', pipeTop, ' pipeBottom ', pipeBottom);
+    console.log(pipeTop.height)
+    this.y = Math.floor(Math.random() * pipeTop) - (pipeTop);
+    console.log('top ', pipeTop, ' pipeBottom ', pipeBottom, ' y', this.y);
     this.gap = 125;
     this.constant = pipeTop + this.gap;
+  }
+
+  difficulty(x) {
+    if (x === 1) {
+      return Math.floor(Math.random() * .7) + .4;
+    }
   }
 
 }
@@ -59,14 +59,11 @@ class Game {
     this.pipeBottom.src = './img/pipe-bottom.png';
     this.drawWaitingAnimation;
 
-
     // this.gameMessage = new Image();
     // this.gameMessage.src = './img/message.png';
 
-
     // this.bg = new Image();
     // this.bg.src = "./img/background.png";
-
 
     this.gameStarted = false;
   }
@@ -74,7 +71,6 @@ class Game {
   loadImages() {
 
   }
-
 
   init() {
     console.log('startGame');
@@ -92,13 +88,12 @@ class Game {
     this.drawWaitingPage();
   }
 
-
-
   draw() {
     ctx.drawImage(bg, 0, 0);
 
     this.drawBird();
-    this.bird.birdY+=this.gravity;
+    this.gravity = this.gravity + .05;
+    this.bird.birdY += (this.gravity);
 
     for (var i = 0; i < this.pipeArray.length; i++) {
       // ctx.drawImage(this.pipeTop, this.pipeArray[i].x, this.pipeArray[i].y);
@@ -115,10 +110,10 @@ class Game {
       if ((this.bird.birdX + this.birdImg.width >= this.pipeArray[i].x && this.bird.birdX <= this.pipeArray[i].x + this.pipeBottom.width) &&
         (this.bird.birdY <= this.pipeArray[i].y + this.pipeTop.height || this.bird.birdY + this.birdImg.height >= this.pipeArray[i].y + this.pipeArray[i].constant)) {
         console.log('Game Over');
-        location.reload();
-      }
 
-     
+        location.reload();
+
+      }
 
       // collision at canvas end
       if ((this.bird.birdY > cvs.height) || (this.bird.birdY < 0)) {
@@ -126,39 +121,43 @@ class Game {
         location.reload();
       }
 
-      if ((this.bird.birdY >= cvs.height - this.base.height) ) {
-        console.log('Game Over');
+      if ((this.bird.birdY >= cvs.height - this.base.height)) {
+        console.log('Game Over base');
+
         location.reload();
       }
 
-      
-
       // collision end
       ctx.drawImage(this.birdImg, this.bird.birdX, this.bird.birdY);
-
       if (this.pipeArray[i].x === 10) {
         this.score++;
         console.log('Score: ', this.score);
       }
+
     }
 
     this.drawBase();
 
+    this.drawScore();
+
     if (keyPressed) {
       console.log('Key Pressed');
-      this.bird.birdY -= 25;
+      this.bird.birdY -= 35;
+      this.gravity = 2;
       keyPressed = false;
+
     }
-
-
 
     requestAnimationFrame(this.draw.bind(this));
   }
 
+  drawScore() {
+    ctx.font = "20px Arial";
+    ctx.fillText(`SCORE: ${this.score}`, 20, 480);
+  }
   drawBird() {
     ctx.drawImage(this.birdImg, this.bird.birdX, this.bird.birdY);
   }
-
 
   drawBase() {
     ctx.drawImage(this.base, 0, cvs.height - this.base.height);
@@ -169,11 +168,10 @@ class Game {
     ctx.drawImage(this.pipeBottom, pipe.x, pipe.y + pipe.constant);
   }
 
-
   drawWaitingPage() {
     var that = this;
     var timeleft = 3;
-    var gameTimer = setInterval(function () {
+    var gameTimer = setInterval(function() {
       --timeleft;
       console.log(timeleft);
 
@@ -192,9 +190,6 @@ class Game {
   }
 }
 
-
-
-
 document.addEventListener('click', this.moveup);
 
 function moveup() {
@@ -202,11 +197,7 @@ function moveup() {
   keyPressed = true;
 }
 
-
-
-window.onload = function () {
-  var g = new Game();
-  g.startGame();
-
-  // draw();
+window.onload = function() {
+  var game = new Game();
+  game.startGame();
 }

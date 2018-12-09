@@ -11,8 +11,7 @@ let keyPressed = false;
 
 class Bird {
   constructor() {
-    // this.image = new Image();
-    // this.image.src = './img/redbird-midflap.png';
+    
     this.birdX = 25;
     this.birdY = 50;
   }
@@ -30,7 +29,7 @@ class Pipe {
 
   difficulty(x) {
     if (x === 1) {
-      return Math.floor(Math.random() * .7) + .4;
+     
     }
   }
 
@@ -44,6 +43,8 @@ class Game {
 
     this.gravity = 2;
 
+    this.isGameOver = false;
+
     this.bird = new Bird();
     this.pipeArray = [];
 
@@ -53,10 +54,13 @@ class Game {
     this.pipeBottom = new Image();
     this.base = new Image();
 
+    this.gameOverImg = new Image();
+
     this.base.src = './img/base.png';
     this.birdImg.src = "./img/redbird-midflap.png";
     this.pipeTop.src = './img/pipe-top.png';
     this.pipeBottom.src = './img/pipe-bottom.png';
+    this.gameOverImg.src='./img/gameover.png';
     this.drawWaitingAnimation;
 
     // this.gameMessage = new Image();
@@ -65,12 +69,10 @@ class Game {
     // this.bg = new Image();
     // this.bg.src = "./img/background.png";
 
-    this.gameStarted = false;
+    // this.gameStarted = false;
   }
 
-  loadImages() {
-
-  }
+  
 
   init() {
     console.log('startGame');
@@ -83,72 +85,82 @@ class Game {
     console.log('x: ', this.pipeArray[0].x, ', y:', this.pipeArray[0].y);
     ctx.drawImage(bg, 0, 0);
 
-    // ctx.drawImage(this.bg, 0, 0);
-    // this.draw();
     this.drawWaitingPage();
   }
 
   draw() {
-    ctx.drawImage(bg, 0, 0);
 
-    this.drawBird();
-    this.gravity = this.gravity + .05;
-    this.bird.birdY += (this.gravity);
+    if (!this.isGameOver) {
 
-    for (var i = 0; i < this.pipeArray.length; i++) {
-      // ctx.drawImage(this.pipeTop, this.pipeArray[i].x, this.pipeArray[i].y);
-      // ctx.drawImage(this.pipeBottom, this.pipeArray[i].x, this.pipeArray[i].y + this.pipeArray[i].constant);
+      ctx.drawImage(bg, 0, 0);
 
-      this.drawPipe(this.pipeArray[i]);
-      this.pipeArray[i].x--;
+      this.drawBird();
 
-      if (this.pipeArray[i].x == 125) {
-        this.pipeArray.push(new Pipe(this.pipeTop.height, this.pipeBottom.height));
+      this.gravity = this.gravity + 0.2;
+
+      this.bird.birdY += (this.gravity);
+
+      for (var i = 0; i < this.pipeArray.length; i++) {
+        // y + this.pipeArray[i].constant);
+
+        this.drawPipe(this.pipeArray[i]);
+        this.pipeArray[i].x--;
+
+        if (this.pipeArray[i].x == 125) {
+          this.pipeArray.push(new Pipe(this.pipeTop.height, this.pipeBottom.height));
+        }
+
+        // collision
+        if ((this.bird.birdX + this.birdImg.width >= this.pipeArray[i].x && this.bird.birdX <= this.pipeArray[i].x + this.pipeBottom.width) &&
+          (this.bird.birdY <= this.pipeArray[i].y + this.pipeTop.height || this.bird.birdY + this.birdImg.height >= this.pipeArray[i].y + this.pipeArray[i].constant)) {
+          console.log('Game Over');
+          this.drawGameOverPage();
+        }
+
+        // collision at canvas end
+        if ((this.bird.birdY > cvs.height) || (this.bird.birdY < 0)) {
+          console.log('Game Over');
+          this.drawGameOverPage();
+        }
+
+        if ((this.bird.birdY >= cvs.height - this.base.height)) {
+          console.log('Game Over base');
+
+          this.drawGameOverPage();
+
+        }
+
+        // collision end
+        ctx.drawImage(this.birdImg, this.bird.birdX, this.bird.birdY);
+        if (this.pipeArray[i].x === 10) {
+          this.score++;
+          console.log('Score: ', this.score);
+        }
+
       }
 
-      // collision
-      if ((this.bird.birdX + this.birdImg.width >= this.pipeArray[i].x && this.bird.birdX <= this.pipeArray[i].x + this.pipeBottom.width) &&
-        (this.bird.birdY <= this.pipeArray[i].y + this.pipeTop.height || this.bird.birdY + this.birdImg.height >= this.pipeArray[i].y + this.pipeArray[i].constant)) {
-        console.log('Game Over');
+      this.drawBase();
 
-        location.reload();
+      this.drawScore();
+
+      if (keyPressed) {
+        console.log('Key Pressed');
+        this.gravity = -3;
+        this.bird.birdY -= this.gravity;
+        //this.bird.birdY += -35;
+        keyPressed = false;
 
       }
 
-      // collision at canvas end
-      if ((this.bird.birdY > cvs.height) || (this.bird.birdY < 0)) {
-        console.log('Game Over');
-        location.reload();
-      }
-
-      if ((this.bird.birdY >= cvs.height - this.base.height)) {
-        console.log('Game Over base');
-
-        location.reload();
-      }
-
-      // collision end
-      ctx.drawImage(this.birdImg, this.bird.birdX, this.bird.birdY);
-      if (this.pipeArray[i].x === 10) {
-        this.score++;
-        console.log('Score: ', this.score);
-      }
-
+      requestAnimationFrame(this.draw.bind(this));
     }
+  }
 
-    this.drawBase();
 
-    this.drawScore();
 
-    if (keyPressed) {
-      console.log('Key Pressed');
-      this.bird.birdY -= 35;
-      this.gravity = 2;
-      keyPressed = false;
-
-    }
-
-    requestAnimationFrame(this.draw.bind(this));
+  drawPipe(pipe) {
+    ctx.drawImage(this.pipeTop, pipe.x, pipe.y);
+    ctx.drawImage(this.pipeBottom, pipe.x, pipe.y + pipe.constant);
   }
 
   drawScore() {
@@ -163,15 +175,11 @@ class Game {
     ctx.drawImage(this.base, 0, cvs.height - this.base.height);
   }
 
-  drawPipe(pipe) {
-    ctx.drawImage(this.pipeTop, pipe.x, pipe.y);
-    ctx.drawImage(this.pipeBottom, pipe.x, pipe.y + pipe.constant);
-  }
-
+  
   drawWaitingPage() {
     var that = this;
     var timeleft = 3;
-    var gameTimer = setInterval(function() {
+    var gameTimer = setInterval(function () {
       --timeleft;
       console.log(timeleft);
 
@@ -188,6 +196,23 @@ class Game {
       }
     }, 1000);
   }
+
+
+
+  drawGameOverPage() {
+    this.isGameOver = true;
+    // ctx.clearRect(0, 0, cvs.width, cvs.height);
+    ctx.drawImage(bg,0,0);
+    ctx.drawImage(this.gameOverImg, 50, 200);
+
+    if (keyPressed) {
+      console.log('GameOver')
+      keyPressed = false;
+    }
+
+    this.startGame();
+
+  }
 }
 
 document.addEventListener('click', this.moveup);
@@ -197,7 +222,7 @@ function moveup() {
   keyPressed = true;
 }
 
-window.onload = function() {
+window.onload = function () {
   var game = new Game();
   game.startGame();
 }

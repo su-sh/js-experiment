@@ -1,12 +1,12 @@
 console.log('typing-tutor');
 
-
 let thatGame;
 class Game {
   constructor() {
 
     this.element = undefined;
     this.displayInputElement = undefined;
+    this.scoreElement = undefined;
 
     this.gameStarted = undefined;
     this.score = undefined;
@@ -35,6 +35,16 @@ class Game {
   initElements() {
     this.element = document.getElementsByClassName('game-container')[0];
     this.displayInputElement = document.getElementById('inputDisplay');
+
+    this.scoreElement = document.createElement('span');
+
+    this.scoreElement.style.position = 'absolute';
+    this.scoreElement.style.top = 10+ 'px';
+    this.scoreElement.style.right = 10 + 'px';
+    this.scoreElement.style.color = 'black';
+    document.getElementById('game-container').appendChild(this.scoreElement);
+
+
     this.score = 0;
     this.gameStarted = false;
 
@@ -79,7 +89,6 @@ class Game {
 
     this.gameStarted = true;
 
-
     this.gameInterval = setInterval(this.mainGame, 1000 / 60);
 
   }
@@ -102,7 +111,7 @@ class Game {
         thatGame.displayWords[i].draw();
 
         thatGame.displayWords[i].move();
-
+        thatGame.displayScore();
 
         // height
         if (thatGame.displayWords[i].getY() >= 500) {
@@ -117,11 +126,18 @@ class Game {
   }
 
   displayInput() {
-    this.displayInputElement.innerHTML = thatGame.keyboardInput.join('');
+    thatGame.displayInputElement.innerHTML = thatGame.keyboardInput.join('');
   }
 
+  displayScore() {
+    thatGame.scoreElement.innerHTML = `SCORE: ${this.score}`;
+  }
   getRandomWord() {
-    return this.wordList[Math.floor(Math.random() * this.wordList.length)];
+    var num = Math.floor(Math.random() * this.wordList.length);
+    var ret = this.wordList[num];
+    this.wordList.splice(num, 1);
+
+    return ret;
   }
 
   checkIfInputMatched() {
@@ -129,13 +145,20 @@ class Game {
 
     for (var i = 0; i < thatGame.displayWords.length; i++) {
 
-      // console.log('adf ',thatGame.displayWords[i].word.slice(0,inputLength));
+      if (thatGame.displayWords[i].word.slice(0, inputLength) === thatGame.keyboardInput.join('')) {
+        console.log('Match: ', thatGame.displayWords[i].word.slice(0, inputLength));
 
-      if(thatGame.displayWords[i].word.slice(0,inputLength) === thatGame.keyboardInput.join('')){
-        console.log('Match: ',thatGame.displayWords[i].word.slice(0,inputLength));
+        var totalMatched = thatGame.displayWords[i].matchUpdate(inputLength);
+        if (totalMatched) {
+          console.log('something matched');
+          thatGame.displayWords.splice(i, 1);
+          thatGame.score++;
 
+          thatGame.keyboardInput = [];
+          thatGame.displayInput();
+          console.log('Score: ', thatGame.score);
+        }
 
-        
       }
     }
 
@@ -145,9 +168,10 @@ class Game {
 }
 
 
+let thatWord;
 class Word {
   constructor(word) {
-    this.thatWord = this;
+    thatWord = this;
     this.word = word;
     this.delete = false;
     this.x = 0;
@@ -155,6 +179,7 @@ class Word {
     this.letters = [];
     this.lettersSpan = [];
     this.element = undefined;
+    this.matched = false;
     this.init();
   }
 
@@ -167,11 +192,8 @@ class Word {
       var letterSpanEl = document.createElement('span');
       letterSpanEl.innerHTML = this.letters[i];
       this.element.appendChild(letterSpanEl);
+      this.lettersSpan.push(letterSpanEl);
     }
-
-    // console.log(this.element);
-    // this.draw();
-
 
 
   }
@@ -186,11 +208,37 @@ class Word {
 
   move() {
     this.y++;
+
+    if (this.y > 150) {
+      // document.getElementById('game-container').removeChild(this.element);
+
+    }
     this.element.style.top = this.y + 'px';
   }
 
   getY() {
     return this.y;
+  }
+
+
+  matchUpdate(length) {
+    for (var i = 0; i < length; i++) {
+      this.lettersSpan[i].style.color = 'blue';
+    }
+
+
+    if (length == this.word.length) {
+
+      console.log('no. ', this.word.length);
+
+      // document.getElementById('game-container').removeChild(this.element);
+      // container.removeChild(this.element);
+      document.getElementById('game-container').removeChild(this.element);
+
+      return true;
+    } else {
+      return false;
+    }
   }
 }
 

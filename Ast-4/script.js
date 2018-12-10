@@ -8,13 +8,18 @@ class Game {
     this.displayInputElement = undefined;
     this.scoreElement = undefined;
 
+
+    this.gameOverElement = undefined;
+
     this.gameStarted = undefined;
     this.score = undefined;
 
-    this.wordList = ['kindle', 'apple', 'ball', 'cat', 'dog', 'elephant', 'fish', 'enigma', 'grape', 'heed', 'blunderbuss', 'podium', 'talisman'];
+    this.wordList = ['apple', 'kindle',  'ball', 'cat', 'dog', 'elephant', 'fish', 'enigma', 'grape', 'heed', 'blunderbuss', 'podium', 'talisman'];
     this.keyboardInput = [];
 
     this.displayWords = [];
+    this.matchedArrayList = [];
+
 
     this.gameInterval = undefined;
 
@@ -36,13 +41,33 @@ class Game {
     this.element = document.getElementsByClassName('game-container')[0];
     this.displayInputElement = document.getElementById('inputDisplay');
 
+
+
     this.scoreElement = document.createElement('span');
 
     this.scoreElement.style.position = 'absolute';
-    this.scoreElement.style.top = 10+ 'px';
+    this.scoreElement.style.top = 10 + 'px';
     this.scoreElement.style.right = 10 + 'px';
     this.scoreElement.style.color = 'black';
+
+
+
+
+
     document.getElementById('game-container').appendChild(this.scoreElement);
+
+    this.gameOverElement = document.createElement('span');
+    this.gameOverElement.style.position = 'absolute';
+    this.gameOverElement.style.top = 220 + 'px';
+    this.gameOverElement.style.left = 38 + '%';
+    this.gameOverElement.style.fontSize = '40px';
+    this.gameOverElement.style.color = 'black';
+    this.gameOverElement.innerHTML = 'GAME OVER';
+    this.gameOverElement.style.display = 'none';
+
+    document.getElementById('game-container').appendChild(this.gameOverElement);
+
+
 
 
     this.score = 0;
@@ -52,21 +77,16 @@ class Game {
     console.log('init', this.element);
 
 
-    // this.element.innerHTML='this'+this.score;
-    // var x = t;
-    // console.log(x)
-
-
     document.addEventListener('keydown', function (event) {
       var x = event.keyCode;
       if (event.keyCode == 8) {
         // backspace
         console.log('backSpace');
         if (thatGame.keyboardInput.length > 0) {
+          
           thatGame.keyboardInput.pop();
-          console.log('Backspace: ', thatGame.keyboardInput);
-
-
+          
+          thatGame.clearOtherMatched();
 
         }
       }
@@ -88,40 +108,35 @@ class Game {
   startGame() {
 
     this.gameStarted = true;
-
-    this.gameInterval = setInterval(this.mainGame, 1000 / 60);
+    this.gameInterval = setInterval(this.mainGame, 1000 / 50);
 
   }
 
   mainGame() {
 
     if (thatGame.gameStarted) {
-
       thatGame.newWordTimer++;
-
       if (thatGame.newWordTimer == 80) {
         let word = new Word(thatGame.getRandomWord());
         thatGame.displayWords.push(word);
         thatGame.newWordTimer = 0;
       }
 
-
-      // console.log('s')
       for (var i = 0; i < thatGame.displayWords.length; i++) {
         thatGame.displayWords[i].draw();
 
         thatGame.displayWords[i].move();
+
         thatGame.displayScore();
 
-        // height
         if (thatGame.displayWords[i].getY() >= 500) {
           console.log('gameover');
+          thatGame.gameOverElement.style.display = 'block';
+          thatGame.gameStarted = false;
         }
       }
 
-    } else {
-
-    }
+    } else {}
 
   }
 
@@ -136,7 +151,6 @@ class Game {
     var num = Math.floor(Math.random() * this.wordList.length);
     var ret = this.wordList[num];
     this.wordList.splice(num, 1);
-
     return ret;
   }
 
@@ -148,24 +162,38 @@ class Game {
       if (thatGame.displayWords[i].word.slice(0, inputLength) === thatGame.keyboardInput.join('')) {
         console.log('Match: ', thatGame.displayWords[i].word.slice(0, inputLength));
 
+        thatGame.displayWords[i].matched = true;
+
         var totalMatched = thatGame.displayWords[i].matchUpdate(inputLength);
+
         if (totalMatched) {
-          console.log('something matched');
+          
           thatGame.displayWords.splice(i, 1);
           thatGame.score++;
 
           thatGame.keyboardInput = [];
           thatGame.displayInput();
+
           console.log('Score: ', thatGame.score);
+
+          thatGame.clearOtherMatched();
         }
 
       }
     }
+  }
 
-
+  clearOtherMatched() {
+    for (var i = 0; i < thatGame.displayWords.length; i++) {
+      if (thatGame.displayWords[i].matched === true) {
+        thatGame.displayWords[i].matched = false;
+        thatGame.displayWords[i].clearAllColor();
+      }
+    }
   }
 
 }
+
 
 
 let thatWord;
@@ -174,7 +202,7 @@ class Word {
     thatWord = this;
     this.word = word;
     this.delete = false;
-    this.x = 0;
+    this.x = getRandomArbitrary();
     this.y = -20;
     this.letters = [];
     this.lettersSpan = [];
@@ -188,7 +216,7 @@ class Word {
     this.letters = this.word.split('');
 
     for (var i = 0; i < this.letters.length; i++) {
-      // console.log(this.letters[i]);
+
       var letterSpanEl = document.createElement('span');
       letterSpanEl.innerHTML = this.letters[i];
       this.element.appendChild(letterSpanEl);
@@ -209,10 +237,6 @@ class Word {
   move() {
     this.y++;
 
-    if (this.y > 150) {
-      // document.getElementById('game-container').removeChild(this.element);
-
-    }
     this.element.style.top = this.y + 'px';
   }
 
@@ -228,22 +252,31 @@ class Word {
 
 
     if (length == this.word.length) {
-
       console.log('no. ', this.word.length);
 
-      // document.getElementById('game-container').removeChild(this.element);
-      // container.removeChild(this.element);
       document.getElementById('game-container').removeChild(this.element);
 
       return true;
+
     } else {
+
       return false;
     }
   }
+
+  clearAllColor() {
+    for (var i = 0; i < this.letters.length; i++) {
+
+      this.lettersSpan[i].style.color = 'black';
+    }
+  }
+
+
 }
 
-
-
+function getRandomArbitrary() {
+  return Math.random() * (900 - 100) + 10;
+}
 
 
 var game = new Game();

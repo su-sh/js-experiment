@@ -1,7 +1,7 @@
 console.log('box.js');
 
 var boxArray = [];
-var colorArray = ['red', 'yellow', 'blue', 'white', 'black'];
+var colorArray = ['red', 'green', 'blue'];
 
 function Box(x, y) {
   this.x = x;
@@ -11,7 +11,7 @@ function Box(x, y) {
   this.width = 10;
   this.height = 10;
 
-  var c = (x + y) % 5;
+  var c = (x + y) % 3;
   this.color = colorArray[c];
   this.element;
 
@@ -97,7 +97,7 @@ function BoxCollision() {
     var mainContainer = document.getElementById('main-container');
     mainContainer.style.width = width + 'px';
     mainContainer.style.height = height + 'px';
-    mainContainer.style.backgroundColor = 'green';
+    mainContainer.style.backgroundColor = 'aqua';
 
 
     for (var i = 0; i < boxNos; i++) {

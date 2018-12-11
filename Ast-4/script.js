@@ -14,7 +14,7 @@ class Game {
     this.gameStarted = undefined;
     this.score = undefined;
 
-    this.wordList = ['apple', 'kindle',  'ball', 'cat', 'dog', 'elephant', 'fish', 'enigma', 'grape', 'heed', 'blunderbuss', 'podium', 'talisman'];
+    this.wordList = ['hippie', 'hippies', 'hippisowski', 'lewandowski', 'blaszczykowski', 'sallow', 'placid', 'sage', 'candid', 'ignominy', 'pragmatic', 'transcribe', 'alacrity', 'cardinal', 'kindle', 'deliberate', 'augury', 'stipulate', 'mettlesome', 'touting', 'enigma', 'virtuosity', 'quintessential', 'blunderbuss', 'podium', 'talisman', 'idyll', 'aphoristic', 'maudlin', 'dispatch', 'froward','agile','bliss','champ','destiny','elegance','freedom','genius','hope','imagine','joy','kind','life','magic','noble','one','positive','quiet','refined','secure','tranquil','uplift','victory','win','xenium','yes','zeal'];
     this.keyboardInput = [];
 
     this.displayWords = [];
@@ -83,9 +83,9 @@ class Game {
         // backspace
         console.log('backSpace');
         if (thatGame.keyboardInput.length > 0) {
-          
+
           thatGame.keyboardInput.pop();
-          
+
           thatGame.clearOtherMatched();
 
         }
@@ -167,7 +167,7 @@ class Game {
         var totalMatched = thatGame.displayWords[i].matchUpdate(inputLength);
 
         if (totalMatched) {
-          
+
           thatGame.displayWords.splice(i, 1);
           thatGame.score++;
 

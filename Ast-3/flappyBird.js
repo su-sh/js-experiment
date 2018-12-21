@@ -7,11 +7,13 @@ gameMessage.src = './img/message.png';
 let bg = new Image();
 bg.src = "./img/background.png";
 
+let gameOver = new Image();
+gameOver.src = "./img/gameover.png";
+
 let keyPressed = false;
 
 class Bird {
   constructor() {
-    
     this.birdX = 25;
     this.birdY = 50;
   }
@@ -27,12 +29,6 @@ class Pipe {
     this.constant = pipeTop + this.gap;
   }
 
-  difficulty(x) {
-    if (x === 1) {
-     
-    }
-  }
-
 }
 
 class Game {
@@ -40,9 +36,7 @@ class Game {
   constructor() {
 
     this.score = 0;
-
     this.gravity = 2;
-
     this.isGameOver = false;
 
     this.bird = new Bird();
@@ -60,19 +54,10 @@ class Game {
     this.birdImg.src = "./img/redbird-midflap.png";
     this.pipeTop.src = './img/pipe-top.png';
     this.pipeBottom.src = './img/pipe-bottom.png';
-    this.gameOverImg.src='./img/gameover.png';
+    this.gameOverImg.src = './img/gameover.png';
     this.drawWaitingAnimation;
 
-    // this.gameMessage = new Image();
-    // this.gameMessage.src = './img/message.png';
-
-    // this.bg = new Image();
-    // this.bg.src = "./img/background.png";
-
-    // this.gameStarted = false;
   }
-
-  
 
   init() {
     console.log('startGame');
@@ -101,7 +86,6 @@ class Game {
       this.bird.birdY += (this.gravity);
 
       for (var i = 0; i < this.pipeArray.length; i++) {
-        // y + this.pipeArray[i].constant);
 
         this.drawPipe(this.pipeArray[i]);
         this.pipeArray[i].x--;
@@ -125,9 +109,7 @@ class Game {
 
         if ((this.bird.birdY >= cvs.height - this.base.height)) {
           console.log('Game Over base');
-
           this.drawGameOverPage();
-
         }
 
         // collision end
@@ -156,8 +138,6 @@ class Game {
     }
   }
 
-
-
   drawPipe(pipe) {
     ctx.drawImage(this.pipeTop, pipe.x, pipe.y);
     ctx.drawImage(this.pipeBottom, pipe.x, pipe.y + pipe.constant);
@@ -175,7 +155,6 @@ class Game {
     ctx.drawImage(this.base, 0, cvs.height - this.base.height);
   }
 
-  
   drawWaitingPage() {
     var that = this;
     var timeleft = 3;
@@ -184,7 +163,6 @@ class Game {
       console.log(timeleft);
 
       ctx.drawImage(bg, 0, 0);
-      // ctx.drawImage(this.bg, 0, 0);
       ctx.drawImage(gameMessage, 45, 80);
 
       ctx.font = "30px Arial";
@@ -197,21 +175,20 @@ class Game {
     }, 1000);
   }
 
-
-
   drawGameOverPage() {
     this.isGameOver = true;
-    // ctx.clearRect(0, 0, cvs.width, cvs.height);
-    ctx.drawImage(bg,0,0);
-    ctx.drawImage(this.gameOverImg, 50, 200);
+    ctx.clearRect(0, 0, cvs.width, 512);
+    ctx.drawImage(bg, 0, 0);
 
+    ctx.drawImage(gameOver, 50, 200);
     if (keyPressed) {
-      console.log('GameOver')
       keyPressed = false;
     }
 
-    this.startGame();
-
+    setTimeout(function () {
+      var game = new Game();
+      game.startGame();
+    }, 3000);
   }
 }
 

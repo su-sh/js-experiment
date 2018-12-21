@@ -8,22 +8,24 @@ class Game {
     this.displayInputElement = undefined;
     this.scoreElement = undefined;
 
-
     this.gameOverElement = undefined;
+    this.gameWinnerElement = undefined;
 
     this.gameStarted = undefined;
     this.score = undefined;
+    this.newWordTimer = undefined;
 
-    this.wordList = ['hippie', 'hippies', 'hippisowski', 'lewandowski', 'blaszczykowski', 'sallow', 'placid', 'sage', 'candid', 'ignominy', 'pragmatic', 'transcribe', 'alacrity', 'cardinal', 'kindle', 'deliberate', 'augury', 'stipulate', 'mettlesome', 'touting', 'enigma', 'virtuosity', 'quintessential', 'blunderbuss', 'podium', 'talisman', 'idyll', 'aphoristic', 'maudlin', 'dispatch', 'froward','agile','bliss','champ','destiny','elegance','freedom','genius','hope','imagine','joy','kind','life','magic','noble','one','positive','quiet','refined','secure','tranquil','uplift','victory','win','xenium','yes','zeal'];
+    this.wordList = ['hippie', 'hippies', 'hippisowski', 'lewandowski', 'blaszczykowski', 'sallow', 'placid', 'sage', 'candid', 'ignominy', 'pragmatic', 'transcribe', 'alacrity', 'cardinal', 'kindle', 'deliberate', 'augury', 'stipulate', 'mettlesome', 'touting', 'enigma', 'virtuosity', 'quintessential', 'blunderbuss', 'podium', 'talisman', 'idyll', 'aphoristic', 'maudlin', 'dispatch', 'froward', 'agile', 'bliss', 'champ', 'destiny', 'elegance', 'freedom', 'genius', 'hope', 'imagine', 'joy', 'kind', 'life', 'magic', 'noble', 'one', 'positive', 'quiet', 'refined', 'secure', 'tranquil', 'uplift', 'victory', 'win', 'xenium', 'yes', 'zeal'];
+    // this.wordList = ['hippie'];
     this.keyboardInput = [];
 
     this.displayWords = [];
     this.matchedArrayList = [];
 
-
     this.gameInterval = undefined;
 
-    this.newWordTimer = 0;
+    this.newWordTimer = undefined;
+    this.lastWord = false;
 
     this.init();
     thatGame = this;
@@ -32,7 +34,6 @@ class Game {
   }
 
   init() {
-    console.log('init', this.element);
     this.initElements();
 
   }
@@ -41,18 +42,12 @@ class Game {
     this.element = document.getElementsByClassName('game-container')[0];
     this.displayInputElement = document.getElementById('inputDisplay');
 
-
-
     this.scoreElement = document.createElement('span');
 
     this.scoreElement.style.position = 'absolute';
     this.scoreElement.style.top = 10 + 'px';
     this.scoreElement.style.right = 10 + 'px';
     this.scoreElement.style.color = 'black';
-
-
-
-
 
     document.getElementById('game-container').appendChild(this.scoreElement);
 
@@ -65,17 +60,21 @@ class Game {
     this.gameOverElement.innerHTML = 'GAME OVER';
     this.gameOverElement.style.display = 'none';
 
+    this.gameWinnerElement = document.createElement('span');
+    this.gameWinnerElement.style.position = 'absolute';
+    this.gameWinnerElement.style.top = 220 + 'px';
+    this.gameWinnerElement.style.left = 40 + '%';
+    this.gameWinnerElement.style.fontSize = '40px';
+    this.gameWinnerElement.style.color = 'black';
+    this.gameWinnerElement.innerHTML = 'WINNER';
+    this.gameWinnerElement.style.display = 'none';
+
     document.getElementById('game-container').appendChild(this.gameOverElement);
 
-
-
-
+    document.getElementById('game-container').appendChild(this.gameWinnerElement);
     this.score = 0;
+    this.newWordTimer = 0;
     this.gameStarted = false;
-
-
-    console.log('init', this.element);
-
 
     document.addEventListener('keydown', function (event) {
       var x = event.keyCode;
@@ -117,9 +116,14 @@ class Game {
     if (thatGame.gameStarted) {
       thatGame.newWordTimer++;
       if (thatGame.newWordTimer == 80) {
-        let word = new Word(thatGame.getRandomWord());
-        thatGame.displayWords.push(word);
-        thatGame.newWordTimer = 0;
+        let arg = thatGame.getRandomWord();
+        if (arg) {
+          let word = new Word(arg);
+          thatGame.displayWords.push(word);
+          thatGame.newWordTimer = 0;
+        }
+
+
       }
 
       for (var i = 0; i < thatGame.displayWords.length; i++) {
@@ -136,7 +140,7 @@ class Game {
         }
       }
 
-    } else {}
+    }
 
   }
 
@@ -149,8 +153,12 @@ class Game {
   }
   getRandomWord() {
     var num = Math.floor(Math.random() * this.wordList.length);
+    if (this.wordList.length === 0) {
+      this.lastWord = true;
+    }
     var ret = this.wordList[num];
     this.wordList.splice(num, 1);
+
     return ret;
   }
 
@@ -176,6 +184,11 @@ class Game {
 
           console.log('Score: ', thatGame.score);
 
+          if (thatGame.lastWord) {
+            console.log('winner')
+            thatGame.gameWinnerElement.style.display = 'block';
+            thatGame.gameStarted = false;
+          }
           thatGame.clearOtherMatched();
         }
 
@@ -193,8 +206,6 @@ class Game {
   }
 
 }
-
-
 
 let thatWord;
 class Word {
@@ -223,7 +234,6 @@ class Word {
       this.lettersSpan.push(letterSpanEl);
     }
 
-
   }
 
   draw() {
@@ -244,12 +254,10 @@ class Word {
     return this.y;
   }
 
-
   matchUpdate(length) {
     for (var i = 0; i < length; i++) {
       this.lettersSpan[i].style.color = 'blue';
     }
-
 
     if (length == this.word.length) {
       console.log('no. ', this.word.length);
@@ -271,12 +279,10 @@ class Word {
     }
   }
 
-
 }
 
 function getRandomArbitrary() {
   return Math.random() * (900 - 100) + 10;
 }
-
 
 var game = new Game();
